@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  product-service:
+    build: ./services/product-service
+    ports:
+      - "4001:4001"
+    volumes:
+      - ./services/product-service/data:/usr/src/app/data
+    environment:
+      - PORT=4001
+      - DB_PATH=/usr/src/app/data/products.sqlite
+    restart: unless-stopped
+
+  client-service:
+    build: ./services/client-service
+    ports:
+      - "4002:4002"
+    volumes:
+      - ./services/client-service/data:/usr/src/app/data
+    environment:
+      - PORT=4002
+      - DB_PATH=/usr/src/app/data/clients.sqlite
+    restart: unless-stopped
+
+  sale-service:
+    build: ./services/sale-service
+    ports:
+      - "4003:4003"
+    volumes:
+      - ./services/sale-service/data:/usr/src/app/data
+    environment:
+      - PORT=4003
+      - DB_PATH=/usr/src/app/data/sales.sqlite
+      - PRODUCT_SERVICE_URL=http://product-service:4001
+      - CLIENT_SERVICE_URL=http://client-service:4002
+    depends_on:
+      - product-service
+      - client-service
+    restart: unless-stopped
