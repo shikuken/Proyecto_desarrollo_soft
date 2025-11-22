@@ -16,6 +16,5 @@ export const update = async (id: number, data: Partial<Client>, audit?: any) => 
 };
 
 export const remove = async (id: number) => {
-  const r = await repo.remove(id);
-  return r;
-};
+  await repo.remove(id);
+}

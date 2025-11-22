@@ -4,7 +4,6 @@ export interface SaleLine {
   productId: number;
   qty: number;
   price: number;
-  discount?: number;
 }
 
 export interface Sale {
@@ -12,8 +11,6 @@ export interface Sale {
   clientId?: number;
   number: string;
   total: number;
-  confirmed?: number;
   createdAt?: string;
-  confirmedAt?: string;
   saleLines?: SaleLine[];
 }

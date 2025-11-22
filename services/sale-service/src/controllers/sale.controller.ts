@@ -15,7 +15,11 @@ export const create = async (req: Request, res: Response) => {
 
     for (const it of items) {
       const pid = it.product_id ?? it.productId;
-      const qty = Number(it.quantity ?? it.qty ?? 1);
+      const qtyRaw = it.quantity ?? it.qty ?? 1;
+      const qty = Number(qtyRaw);
+      if (!Number.isFinite(qty) || qty <= 0) {
+        return res.status(400).json({ error: `Cantidad inválida para producto ${pid}` });
+      }
       // fetch product from product service
       let prod;
       try {
@@ -25,7 +29,10 @@ export const create = async (req: Request, res: Response) => {
         return res.status(400).json({ error: `Producto ${pid} no existe` });
       }
       if (!prod) return res.status(400).json({ error: `Producto ${pid} no existe` });
-      const price = Number(prod.price || 0);
+      const price = parseFloat(String(prod.price ?? 0).replace(',', '.'));
+      if (!Number.isFinite(price) || price < 0) {
+        return res.status(400).json({ error: `Precio inválido para producto ${pid}` });
+      }
       const subtotal = price * qty;
       total += subtotal;
       saleLines.push({ productId: Number(pid), qty, price });
@@ -38,6 +45,9 @@ export const create = async (req: Request, res: Response) => {
         return res.status(400).json({ error: `Cliente ${clientId} no existe` });
       }
     }
+
+    // round total to 2 decimals and ensure numeric
+    total = Number((total || 0).toFixed(2));
 
     const salePayload: any = {
       clientId,

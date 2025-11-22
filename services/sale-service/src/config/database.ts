@@ -36,6 +36,21 @@ export const initDatabase = () => {
       price REAL,
       discount REAL DEFAULT 0
     )`);
+    // Ensure autoincrement sequences start at 1 when table is empty
+    const resetSeqIfEmpty = (table: string) => {
+      db.get(`SELECT COUNT(*) as c FROM ${table}`, [], (err, row: any) => {
+        if (err) return;
+        if ((row?.c ?? 0) === 0) {
+          db.get("SELECT name FROM sqlite_master WHERE type='table' AND name='sqlite_sequence'", [], (err2, r2: any) => {
+            if (!err2 && r2) {
+              db.run('DELETE FROM sqlite_sequence WHERE name = ?', [table], () => {});
+            }
+          });
+        }
+      });
+    };
 
+    resetSeqIfEmpty('sales');
+    resetSeqIfEmpty('sale_lines');
   });
 };

@@ -6,9 +6,9 @@ export const create = (sale: Sale): Promise<Sale> => new Promise((resolve, rejec
     if (err) return reject(err);
     const saleId = this.lastID;
     const lines = sale.saleLines || [];
-    const insertLine = db.prepare(`INSERT INTO sale_lines (saleId,productId,qty,price,discount) VALUES (?, ?, ?, ?, ?)`);
+    const insertLine = db.prepare(`INSERT INTO sale_lines (saleId,productId,qty,price) VALUES (?, ?, ?, ?)`);
     for (const ln of lines) {
-      insertLine.run([saleId, ln.productId, ln.qty, ln.price, ln.discount || 0]);
+      insertLine.run([saleId, ln.productId, ln.qty, ln.price]);
     }
     insertLine.finalize((err2) => {
       if (err2) reject(err2);

@@ -34,9 +34,10 @@ export const update = (id: number, data: Partial<Client>): Promise<any> => new P
   });
 });
 
-export const remove = (id: number): Promise<any> => new Promise((resolve, reject) => {
-  db.run(`DELETE FROM clients WHERE id = ?`, [id], function(err) {
+export const remove = (id: number): Promise<void> => new Promise((resolve, reject) => {
+  db.run('DELETE FROM clients WHERE id = ?', [id], function(err) {
     if (err) reject(err);
-    else resolve({ changes: this.changes });
+    else resolve();
   });
 });
+
